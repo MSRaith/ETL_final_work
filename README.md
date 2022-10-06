@@ -30,7 +30,7 @@
 
 #### Входные данные:
 
-Таблица bookings.ticket. <br/>
+##### Таблица bookings.ticket. <br/>
 Таблица bookings.ticket содержит идентификатор пассажира (passenger_id) — номер документа,
 удостоверяющего личность, — его фамилию и имя (passenger_name) и контактную
 информацию (contact_date).
@@ -43,58 +43,57 @@
  passenger_id   | varchar(20) | NOT NULL     | Идентификатор пассажира<br/>
  passenger_name | text        | NOT NULL     | Имя пассажира<br/>
  contact_data   | jsonb       |              | Контактные данные пассажира<br/>
-Индексы:
- PRIMARY KEY, btree (ticket_no)
-Ограничения внешнего ключа:
- FOREIGN KEY (book_ref) REFERENCES bookings(book_ref)
-Ссылки извне:
- TABLE "ticket_flights" FOREIGN KEY (ticket_no) REFERENCES tickets(ticket_no)
+Индексы:<br/>
+PRIMARY KEY, btree (ticket_no)<br/>
+Ограничения внешнего ключа:<br/>
+FOREIGN KEY (book_ref) REFERENCES bookings(book_ref)<br/>
+Ссылки извне:<br/>
+TABLE "ticket_flights" FOREIGN KEY (ticket_no) REFERENCES tickets(ticket_no)<br/>
 
- Запрос SQL 
-select row_number () over () as id_key,
-t2.passenger_name,
-t2.passenger_id,
-t2.contact_data ->> 'phone' as phone,
-t2.contact_data ->> 'email' as email
-FROM bookings.tickets t2 
+##### Запрос SQL:
+select row_number () over () as id_key,<br/>
+t2.passenger_name,<br/>
+t2.passenger_id,<br/>
+t2.contact_data ->> 'phone' as phone,<br/>
+t2.contact_data ->> 'email' as email<br/>
+FROM bookings.tickets t2 <br/>
 group by t2.passenger_name, t2.passenger_id, t2.contact_data;
 
 #### Выходные данные:
  
- Таблица bookings.dim_passengers
+##### Таблица bookings.dim_passengers
 Таблица измерений bookings.dim_passengers относится к медлено изменяемому измерению второго типа.
 Содержит идентификатор записи (id), ключ пассажира (passenger_key), пассажира (паспорт) — номер документа,
 удостоверяющего личность, — его фамилию и имя (passenger_name) и контактную
 информацию (phone, email), начало и конец версии записи (start_ts, end_ts), статус записи (is_curent),
-дата создания записи (create_ts), дата обновления записи (update_ts)
+дата создания записи (create_ts), дата обновления записи (update_ts)<br/>
 
- Столбец        | Тип         | Модификаторы | Описание
-----------------+-------------+--------------+-----------------------------
+ Столбец        | Тип         | Модификаторы | Описание<br/>
+----------------+-------------+--------------+-----------------------------<br/>
 
-id              |serial       | NOT NULL     | Технический ключ    
-passenger_key   |int          | NULL         | Cурогатный ключ
-passenger_name  |varchar(100) | NULL         | Фамилия и имя пассажира
-passport        |varchar(20)  | NULL         | Индификационый номер пассажира
-email           |varchar(100) | NULL         | Почта пассажира
-phone           |varchar(100) | NULL         | Телефон пассажира
-start_ts        |date         | NULL         | Начало версии записи
-end_ts          |date         | NULL         | Конец версии записи
-is_curent       |bool         | NULL         | Текущий статус версии записи, default true
-create_ts       |timestamp    | NULL         | Запись сздана, default current_timestamp
-update_ts       |timestamp    | NULL         | Запись обнавлена, default current_timestamp
-"version"       |int          | NULL         | Версия записи, default 1 
+id              |serial       | NOT NULL     | Технический ключ    <br/>
+passenger_key   |int          | NULL         | Cурогатный ключ<br/>
+passenger_name  |varchar(100) | NULL         | Фамилия и имя пассажира<br/>
+passport        |varchar(20)  | NULL         | Индификационый номер пассажира<br/>
+email           |varchar(100) | NULL         | Почта пассажира<br/>
+phone           |varchar(100) | NULL         | Телефон пассажира<br/>
+start_ts        |date         | NULL         | Начало версии записи<br/>
+end_ts          |date         | NULL         | Конец версии записи<br/>
+is_curent       |bool         | NULL         | Текущий статус версии записи, default true<br/>
+create_ts       |timestamp    | NULL         | Запись сздана, default current_timestamp<br/>
+update_ts       |timestamp    | NULL         | Запись обнавлена, default current_timestamp<br/>
+"version"       |int          | NULL         | Версия записи, default 1 <br/>
 
-Индексы:
- PRIMARY KEY, dim_passengers_pkey (id),
- idx_dim_passengers_lookup (passenger_key),
- idx_dim_passengers_passport (passport)
+Индексы:<br/>
+ PRIMARY KEY, dim_passengers_pkey (id),<br/>
+ idx_dim_passengers_lookup (passenger_key),<br/>
+ idx_dim_passengers_passport (passport)<br/>
 
-Ссылки извне:
- TABLE "fact_flights" FOREIGN KEY (passenger_key) REFERENCES tickets(ticket_no)
+Ссылки извне:<br/>
+ TABLEt_flights" FOREIGN KEY (passenger_key) REFERENCES tickets(ticket_no)<br/>
 
-
-Проверка качества даных:
-	1. Номер телефона начинается с '+'
+#### Проверка качества даных:
+1.	 Номер телефона начинается с '+'
 
 
 
