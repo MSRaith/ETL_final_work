@@ -1,21 +1,22 @@
-Процесс извлечения данных из базы даных по авиаперевозкам, преобразование, дополнение и выгрузка в DWH.
+# Процесс извлечения данных из базы даных по авиаперевозкам, преобразование, дополнение и выгрузка в DWH.
 
-Процесс ETL определен заданием dwh_fw.kjb. 
-Задание состоит из выполнения 9 трансформаций и стартового модуля рис.job_fw.jpeg:
-	1. dim_passengers, выполняет трансформацию dwh_fw_passengers.ktr
-	2. dim_aircrafts, выполняет трансформацию dwh_fw_aircrafts.ktr
-	3. dim_airports, выполняет трансформацию dwh_fw_airports.ktr
-	4. dim_tariff, выполняет трансформацию dwh_fw_tariff.ktr
-	5. fact, выполняет трансформацию dwh_fw_fact.ktr
-	6. dim_passengers_csv, выполняет трансформацию dwh_fw_passenger_csv.ktr
-	7. dim_aircrafts_csv, выполняет трансформацию dwh_fw_aircrafts_csv.ktr
-	8. dim_airports_csv, выполняет трансформацию dwh_fw_airports_csv.ktr
-	9. dim_tariff_csv, выполняет трансформацию dwh_fw_tariff_csv.ktr
+Процесс ETL определен заданием dwh_fw.kjb. <br/>
+Задание состоит из выполнения 9 трансформаций (рис.job_fw.jpeg): <br/>
+1.	dim_passengers, выполняет трансформацию dwh_fw_passengers.ktr
+2.	dim_aircrafts, выполняет трансформацию dwh_fw_aircrafts.ktr
+3.	dim_airports, выполняет трансформацию dwh_fw_airports.ktr
+4.	dim_tariff, выполняет трансформацию dwh_fw_tariff.ktr
+5.	fact, выполняет трансформацию dwh_fw_fact.ktr
+6.	dim_passengers_csv, выполняет трансформацию dwh_fw_passenger_csv.ktr
+7.	dim_aircrafts_csv, выполняет трансформацию dwh_fw_aircrafts_csv.ktr
+8.	dim_airports_csv, выполняет трансформацию dwh_fw_airports_csv.ktr
+9.	dim_tariff_csv, выполняет трансформацию dwh_fw_tariff_csv.ktr
+
 Порядок выполнения соответствует списку.
 
-Описание трансформаций:
+### Описание трансформаций:
 
- 1. dwh_fw_passengers.ktr
+###### 1. dwh_fw_passengers.ktr
  Процесс извлечения данных о пасажирах из таблицы bookings.tickets, обогощение, проверка качества и загрузка в таблицу измерений bookings.dim_passengers.
  Состоит из 8-ми шагов, рис.dim_passengers.jpeg:
 	1.input passenger, извлекает необходимые данные, имеет подключение к БД источнику 'bd_in'.
