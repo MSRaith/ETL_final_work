@@ -14,9 +14,9 @@
 
 Порядок выполнения соответствует списку.
 
-### Описание трансформаций:
+## Описание трансформаций:
 
-###### 1. dwh_fw_passengers.ktr
+### 1. dwh_fw_passengers.ktr
 Процесс извлечения данных о пасажирах из таблицы bookings.tickets, обогощение, проверка качества и загрузка в таблицу измерений bookings.dim_passengers.
 Состоит из 8-ми шагов, рис.dim_passengers.jpeg:
 1.	input passenger, извлекает необходимые данные, имеет подключение к БД источнику 'bd_in'.
@@ -28,7 +28,7 @@
 7.	Select rejected row, выбирает необходимые строки для отклоненых данных
 8.	upload dim rejected passengers, выгрузка отклоненых данных в таблицу измерений dim_passengers
 
-Входные данные:
+#### Входные данные:
 
 Таблица bookings.ticket. <br/>
 Таблица bookings.ticket содержит идентификатор пассажира (passenger_id) — номер документа,
@@ -59,7 +59,7 @@ t2.contact_data ->> 'email' as email
 FROM bookings.tickets t2 
 group by t2.passenger_name, t2.passenger_id, t2.contact_data;
 
- Выходные данные:
+#### Выходные данные:
  
  Таблица bookings.dim_passengers
 Таблица измерений bookings.dim_passengers относится к медлено изменяемому измерению второго типа.
