@@ -92,7 +92,7 @@ TABLE fact_flights" FOREIGN KEY (passenger_key) REFERENCES dim_passengers(id)<br
 #### Проверка качества данных:
 1.	 Номер телефона начинается с '+'
 
---
+---
 
 ### 2. dwh_fw_aircrafts.ktr
 Процесс извлечения данных о самолетах из таблицы bookings.aircrafts, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_aircrafts.
