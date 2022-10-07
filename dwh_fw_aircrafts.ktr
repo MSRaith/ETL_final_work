@@ -441,10 +441,10 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>Netology</database>
+    <database>demo</database>
     <port>5432</port>
     <username>postgres</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce108fcbf78e</password>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10ce9dbcce</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -492,10 +492,10 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>Netology</database>
+    <database>demo</database>
     <port>5432</port>
     <username>postgres</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce108fcbf78e</password>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10ce9dbcce</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>

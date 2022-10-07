@@ -571,11 +571,11 @@
     </hop>
     <hop>
       <from>Remove row id</from>
-      <to>Sort rows ticket</to>
+      <to>Sort row ticket 2</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Sort rows ticket</from>
+      <from>Sort row ticket 2</from>
       <to>Ticket join</to>
       <enabled>Y</enabled>
     </hop>
@@ -706,11 +706,11 @@
     </hop>
     <hop>
       <from>Remove flight_id_1</from>
-      <to>Sort row by ticket</to>
+      <to>Sort row ticket </to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Sort row by ticket</from>
+      <from>Sort row ticket </from>
       <to>Ticket join</to>
       <enabled>Y</enabled>
     </hop>
@@ -747,11 +747,6 @@
     <hop>
       <from>Select values rejected</from>
       <to>Table output rejected fact</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Select values checked</from>
-      <to>CSV fact_flight</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -1384,7 +1379,7 @@
     <name>Select values checked</name>
     <type>SelectValues</type>
     <description/>
-    <distribute>N</distribute>
+    <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
@@ -1509,7 +1504,7 @@
     </GUI>
   </step>
   <step>
-    <name>Sort row by ticket</name>
+    <name>Sort row ticket </name>
     <type>SortRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -1845,7 +1840,7 @@
     </GUI>
   </step>
   <step>
-    <name>Sort rows ticket</name>
+    <name>Sort row ticket 2</name>
     <type>SortRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -2116,8 +2111,8 @@
       <schema_name/>
     </partitioning>
     <join_type>INNER</join_type>
-    <step1>Sort row by ticket</step1>
-    <step2>Sort rows ticket</step2>
+    <step1>Sort row ticket </step1>
+    <step2>Sort row ticket 2</step2>
     <keys_1>
       <key>ticket_no</key>
     </keys_1>
@@ -3246,207 +3241,6 @@ order by t.passenger_id;
     <GUI>
       <xloc>448</xloc>
       <yloc>672</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>CSV fact_flight</name>
-    <type>TextFileOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <separator>;</separator>
-    <enclosure>"</enclosure>
-    <enclosure_forced>N</enclosure_forced>
-    <enclosure_fix_disabled>N</enclosure_fix_disabled>
-    <header>Y</header>
-    <footer>N</footer>
-    <format>DOS</format>
-    <compression>None</compression>
-    <encoding/>
-    <endedLine/>
-    <fileNameInField>N</fileNameInField>
-    <fileNameField/>
-    <create_parent_folder>Y</create_parent_folder>
-    <file>
-      <name>${Internal.Entry.Current.Directory}/fact_flight</name>
-      <servlet_output>N</servlet_output>
-      <do_not_open_new_file_init>N</do_not_open_new_file_init>
-      <extention>csv</extention>
-      <append>N</append>
-      <split>N</split>
-      <haspartno>N</haspartno>
-      <add_date>N</add_date>
-      <add_time>N</add_time>
-      <SpecifyFormat>N</SpecifyFormat>
-      <date_time_format/>
-      <add_to_result_filenames>Y</add_to_result_filenames>
-      <pad>N</pad>
-      <fast_dump>N</fast_dump>
-      <splitevery/>
-    </file>
-    <fields>
-      <field>
-        <name>aircrafts_key</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>arrival_airports_key</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>departure_airport_key</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>actual_departure</name>
-        <type>Timestamp</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>actual_arrival</name>
-        <type>Timestamp</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>dt_dep_key</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>dt_arr_key</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>arrival_delay</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>departure_delay</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>amount</name>
-        <type>Number</type>
-        <format>0.#####</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>passengers_key</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>tariff_key</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal>,</decimal>
-        <group> </group>
-        <nullif/>
-        <trim_type>both</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>2336</xloc>
-      <yloc>576</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
