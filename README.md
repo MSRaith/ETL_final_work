@@ -126,6 +126,7 @@ REFERENCES aircrafts(aircraft_code)<br/>
 TABLE "seats" FOREIGN KEY (aircraft_code)<br/>
 REFERENCES aircrafts(aircraft_code) ON DELETE CASCADE<br/>
 
+
 ##### Запрос SQL:
 SELECT row_number () over () as id_key, *<br/>
 FROM bookings.aircrafts a;
@@ -361,4 +362,6 @@ TABLE fact_flights" FOREIGN KEY (tariff_key) REFERENCES dim_tariff(id)
 #### Входные данные:
 
 ##### Таблица bookings.bookings.dim_passengers
+
+
 
