@@ -92,8 +92,6 @@ TABLE fact_flights" FOREIGN KEY (passenger_key) REFERENCES dim_passengers(id)<br
 #### Проверка качества данных:
 1.	 Номер телефона начинается с '+'
 
----
-
 ### 2. dwh_fw_aircrafts.ktr
 Процесс извлечения данных о самолетах из таблицы bookings.aircrafts, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_aircrafts.
 Состоит из 8-ми шагов, рис.dim_aircrafts.jpeg:
@@ -165,7 +163,7 @@ TABLE fact_flights" FOREIGN KEY (aircraft_key) REFERENCES dim_aircrafts(id)
 
 #### Проверка качества даных:
 1.	 Дальность полета больше '0' км
----
+
 ### 3. dwh_fw_airports.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.airports, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_airports.
 Состоит из 8-ми шагов, рис.dim_airports.jpeg:
@@ -242,8 +240,7 @@ TABLE fact_flights" FOREIGN KEY (arrival_airports_key) REFERENCES dim_airports(i
 3.	Широта больше или равна -90
 4.	Широта меньше или равна 90
 
----
-### 3. dwh_fw_tariff.ktr
+### 4. dwh_fw_tariff.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.taruff, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_tariff.
 Состоит из 8-ми шагов, рис.dim_tariff.jpeg:
 1.	input tariff, извлекает необходимые данные, имеет подключение к БД источнику 'bd_in'.
