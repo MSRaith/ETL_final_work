@@ -462,3 +462,7 @@ order by dt."name";<br/>
 
 #### Выходные данные:
 
+##### Таблица bookings.fact_flights
+Описание:
+
+
