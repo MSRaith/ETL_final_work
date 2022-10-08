@@ -244,7 +244,7 @@ TABLE fact_flights" FOREIGN KEY (arrival_airports_key) REFERENCES dim_airports(i
 ---
 ### 3. dwh_fw_tariff.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.taruff, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_tariff.
-Состоит из 8-ми шагов, рис.dim_tariff.jpeg:
+Состоит из 5-и шагов, рис.dim_tariff.jpeg:
 1.	input tariff, извлекает необходимые данные, имеет подключение к БД источнику 'bd_in'.
 2.	select row, выбирает необходимые данные.
 3.	Get today date, получение сегодняшний даты, в формате 'date'
@@ -381,18 +381,18 @@ order by da.airport_code;<br/>
 * Delayed Рейс доступен для регистрации (за сутки до плановой даты вылета), но задержан.
 * Departed Самолет уже вылетел и находится в воздухе.
 * Arrived Самолет прибыл в пункт назначения.
-* Cancelled Рейс отменен.
+* Cancelled Рейс отменен.<br/>
 Столбец, Тип, Модификаторы, Описание<br/>
 flight_id, serial, NOT NULL, Идентификатор рейса<br/>
 flight_no, char(6), NOT NULL, Номер рейса<br/>
-scheduled_departure | timestamptz | NOT NULL | Время вылета по расписанию<br/>
-scheduled_arrival | timestamptz | NOT NULL | Время прилёта по расписанию<br/>
-departure_airport | char(3) | NOT NULL | Аэропорт отправления<br/>
-arrival_airport | char(3) | NOT NULL | Аэропорт прибытия<br/>
-status | varchar(20) | NOT NULL | Статус рейса<br/>
-aircraft_code | char(3) | NOT NULL | Код самолета, IATA<br/>
-actual_departure | timestamptz | | Фактическое время вылета<br/>
-actual_arrival | timestamptz | | Фактическое время прилёта<br/>
+scheduled_departure, timestamptz, NOT NULL, Время вылета по расписанию<br/>
+scheduled_arrival, timestamptz, NOT NULL, Время прилёта по расписанию<br/>
+departure_airport, char(3), NOT NULL, Аэропорт отправления<br/>
+arrival_airport, char(3), NOT NULL, Аэропорт прибытия<br/>
+status, varchar(20), NOT NULL, Статус рейса<br/>
+aircraft_code, char(3), NOT NULL, Код самолета, IATA<br/>
+actual_departure,timestamptz, NULL, Фактическое время вылета<br/>
+actual_arrival, timestamptz, NULL, Фактическое время прилёта<br/>
 Индексы:<br/>
 PRIMARY KEY, btree (flight_id)<br/>
 UNIQUE CONSTRAINT, btree (flight_no, scheduled_departure)<br/>
@@ -408,9 +408,57 @@ FOREIGN KEY (departure_airport) REFERENCES airports(airport_code)<br/>
 TABLE "ticket_flights" FOREIGN KEY (flight_id)<br/>
 REFERENCES flights(flight_id)<br/>
 ##### Запрос SQL:
-select da.id, da.airport_code<br/>
-from bookings.dim_airports da<br/>
+select <br/>
+	f.flight_id,<br/>
+	f.actual_departure, <br/>
+	f.actual_arrival,<br/>
+	(replace(((f.actual_departure)::date)::varchar, '-', ''))::int as dt_dep_key,<br/>
+	(replace(((f.actual_arrival)::date)::varchar, '-', ''))::int as dt_arr_key,<br/>
+	f.scheduled_departure,<br/>
+	f.scheduled_arrival,<br/>
+	f.departure_airport,<br/>
+	f.arrival_airport,<br/>
+	f.aircraft_code<br/>
+from bookings.flights f <br/>
+where f.status = 'Arrived' <br/> 
+	and f.actual_arrival > (select<br/>
+	case <br/>
+		when max(ff.actual_arrival) is not null <br/>
+			then max(ff.actual_arrival)<br/>
+		else '1900/01/01 02:00:00.000'<br/>
+	end<br/>
+	from bookings.fact_flights ff);<br/>
+##### Таблица bookings.ticket_flight
+Описание выше.
+##### Запрос SQL:
+select * from bookings.ticket_flights tf order by tf.flight_id;
+##### Таблица bookings.dim_aircrafts
+Описание выше.
+##### Запрос SQL:
+select da.id, da.aircraft_code<br/>
+from bookings.dim_aircrafts da<br/>
 where da.is_curent is true<br/>
-order by da.airport_code;<br/>
+order by da.aircraft_code;<br/>
+##### Таблица bookings.dim_passengers
+Описание выше.
+##### Запрос SQL:
+select dp.id, dp.passport<br/>
+from bookings.dim_passengers dp<br/>
+where dp.is_curent is true<br/>
+order by dp.passport;<br/>
+##### Таблица bookings.tickets
+Описание выше.
+##### Запрос SQL:
+select t.ticket_no, t.passenger_id<br/>
+from bookings.tickets t<br/>
+order by t.passenger_id;<br/>
+##### Таблица bookings.dim_tariff
+Описание выше.
+##### Запрос SQL:
+select dt.id, dt."name"<br/>
+from bookings.dim_tariff dt<br/>
+where dt.is_curent is true<br/>
+order by dt."name";<br/>
 
+#### Выходные данные:
 
