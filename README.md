@@ -92,6 +92,8 @@ TABLE fact_flights" FOREIGN KEY (passenger_key) REFERENCES dim_passengers(id)<br
 #### Проверка качества данных:
 1.	 Номер телефона начинается с '+'
 
+---
+
 ### 2. dwh_fw_aircrafts.ktr
 Процесс извлечения данных о самолетах из таблицы bookings.aircrafts, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_aircrafts.
 Состоит из 8-ми шагов, рис.dim_aircrafts.jpeg:
@@ -123,7 +125,6 @@ TABLE "flights" FOREIGN KEY (aircraft_code)<br/>
 REFERENCES aircrafts(aircraft_code)<br/>
 TABLE "seats" FOREIGN KEY (aircraft_code)<br/>
 REFERENCES aircrafts(aircraft_code) ON DELETE CASCADE<br/>
-
 
 ##### Запрос SQL:
 SELECT row_number () over () as id_key, *<br/>
@@ -163,7 +164,7 @@ TABLE fact_flights" FOREIGN KEY (aircraft_key) REFERENCES dim_aircrafts(id)
 
 #### Проверка качества даных:
 1.	 Дальность полета больше '0' км
-
+---
 ### 3. dwh_fw_airports.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.airports, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_airports.
 Состоит из 8-ми шагов, рис.dim_airports.jpeg:
@@ -178,7 +179,7 @@ TABLE fact_flights" FOREIGN KEY (aircraft_key) REFERENCES dim_aircrafts(id)
 
 #### Входные данные:
 
-##### Таблица bookings.airports. <br/>
+##### Таблица bookings.airports. 
 Аэропорт идентифицируется трехбуквенным кодом (airport_code) и имеет свое имя
 (airport_name). Для города не предусмотрено отдельной сущности, но название (city) указывается и может
 служить для того, чтобы определить аэропорты одного города. Также указывается широта
@@ -240,7 +241,8 @@ TABLE fact_flights" FOREIGN KEY (arrival_airports_key) REFERENCES dim_airports(i
 3.	Широта больше или равна -90
 4.	Широта меньше или равна 90
 
-### 4. dwh_fw_tariff.ktr
+---
+### 3. dwh_fw_tariff.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.taruff, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_tariff.
 Состоит из 8-ми шагов, рис.dim_tariff.jpeg:
 1.	input tariff, извлекает необходимые данные, имеет подключение к БД источнику 'bd_in'.
@@ -308,11 +310,9 @@ TABLE fact_flights" FOREIGN KEY (tariff_key) REFERENCES dim_tariff(id)
 
 ### 5. dwh_fw_fact.ktr 
 Процесс извлечения данных совершенных из основного источника данных bookings.flight, обогащение из дополнительных источников данных
-проверка качества и загрузка в таблицу фактов bookings.dim_fact_flight.<br/>
-Состоит из 43-х шагов, рис.dim_fact_flight.jpeg:
-
-
-1.	input dep_airports_key, получение данных из таблицы измерений bookings.dim_passengers
+проверка качества и загрузка в таблицу фактов bookings.dim_fact_flight.
+Состоит из 42-х шагов, рис.dim_fact_flight.jpeg:
+1.	input dep_airports_key, получение данных из таблицы измерений bookings.dim_airports
 2.	input flights arrived, получение данныех из таблицы bookings.flights, имеет подключение к БД источнику 'bd_in'.
 3.	Get now, получения данных сегодняшней даты
 4.	input ticket_flights, получение  данных из таблицы bookings.ticket_flight, имеет подключение к БД источнику 'bd_in'
@@ -338,27 +338,79 @@ TABLE fact_flights" FOREIGN KEY (tariff_key) REFERENCES dim_tariff(id)
 24.	Sort rows tariff, сортирует поток данных по fare_conditions
 25.	Tariff join, добовляет к потоку данные о тарифах.
 26.	Sort rows arr_airport, сортирует поток данных по arrival_airport
-27.	arr_airport_key_join
-28.	Remove and rename  arr_airports
-29.	Sort rows aircraft
-30.	aircraft_key_join
-31.	Remove  aircrafts
-32.	Remove tariff row rename id
-33.	Sort rows by flight 3	
-34.	Sort rows by flight
-35.	Flights join
-36.	Select values
-37.	Join dt	
-38.	Filter rows
-39.	Select values checked
-40.	CSV fact_flight
-41.	Table output fact
-42.	Select values rejected
-43.	Table output rejected fact
+27.	arr_airport_key_join, добовляет к потоку, данные о аэропортах
+28.	Remove and rename  arr_airports, удаление из потока вспогательных данных о аэропортах, переименование столбца id аэропорта в ключ
+29.	Sort rows aircraft, сортирует поток данных по aircraft_code
+30.	aircraft_key_join, добаляет к потоку данные о самалетах
+31.	Remove  aircrafts, удаляет вспомогательные данные о самалетах
+32.	Remove tariff row rename id, удаляет вспомогательные данные о тарифах, переименование столбца id тарифа в ключ,
+33.	Sort rows by flight 3, сортирует поток данных по flight_id
+34.	Sort rows by flight, сортирует поток данных по flight_id
+35.	Flights join, соеденяет потоки по соотношению flight_id
+36.	Remove flight_id, удаляет вспомогательные данные
+37.	Join dt, добавляет к потоку дату
+38.	Filter rows, проверка качества данных 
+39.	Select values checked, выбор данных прошедших проверку качества
+40.	Table output fact, выгружает данные в таблицу фатов bookings.fact_flight, имеет подключение к БД назначения 'bd_out'
+41.	Select values rejected, выбор отклоненных данных
+42.	Table output rejected fact, выгрузка данных не прошедших проверку в таблицу bookings.rejected_fact_flights
 
 #### Входные данные:
 
-##### Таблица bookings.bookings.dim_passengers
-
+##### Таблица bookings.bookings.dim_airports
+Описание выше.
+##### Запрос SQL:
+select da.id, da.airport_code<br/>
+from bookings.dim_airports da<br/>
+where da.is_curent is true<br/>
+order by da.airport_code;<br/>
+##### Таблица bookings.flight
+Естественный ключ таблицы рейсов состоит из двух полей — номера рейса (flight_no) и даты
+отправления (scheduled_departure). Чтобы сделать внешние ключи на эту таблицу компактнее,
+в качестве первичного используется суррогатный ключ (flight_id).
+Рейс всегда соединяет две точки — аэропорты вылета (departure_airport) и прибытия
+(arrival_airport). Такое понятие, как «рейс с пересадками» отсутствует: если из одного
+аэропорта до другого нет прямого рейса, в билет просто включаются несколько необходимых
+рейсов.
+У каждого рейса есть запланированные дата и время вылета (scheduled_departure) и прибытия
+(scheduled_arrival). Реальные время вылета (actual_departure) и прибытия (actual_arrival)
+могут отличаться: обычно не сильно, но иногда и на несколько часов, если рейс задержан.
+Статус рейса (status) может принимать одно из следующих значений:
+* Scheduled Рейс доступен для бронирования. Это происходит за месяц до плановой даты вылета; до этого запись о рейсе не существует в базе данных.
+* On Time Рейс доступен для регистрации (за сутки до плановой даты вылета) и не задержан.
+* Delayed Рейс доступен для регистрации (за сутки до плановой даты вылета), но задержан.
+* Departed Самолет уже вылетел и находится в воздухе.
+* Arrived Самолет прибыл в пункт назначения.
+* Cancelled Рейс отменен.
+Столбец, Тип, Модификаторы, Описание<br/>
+flight_id, serial, NOT NULL, Идентификатор рейса<br/>
+flight_no, char(6), NOT NULL, Номер рейса<br/>
+scheduled_departure | timestamptz | NOT NULL | Время вылета по расписанию<br/>
+scheduled_arrival | timestamptz | NOT NULL | Время прилёта по расписанию<br/>
+departure_airport | char(3) | NOT NULL | Аэропорт отправления<br/>
+arrival_airport | char(3) | NOT NULL | Аэропорт прибытия<br/>
+status | varchar(20) | NOT NULL | Статус рейса<br/>
+aircraft_code | char(3) | NOT NULL | Код самолета, IATA<br/>
+actual_departure | timestamptz | | Фактическое время вылета<br/>
+actual_arrival | timestamptz | | Фактическое время прилёта<br/>
+Индексы:<br/>
+PRIMARY KEY, btree (flight_id)<br/>
+UNIQUE CONSTRAINT, btree (flight_no, scheduled_departure)<br/>
+Ограничения-проверки:<br/>
+CHECK (scheduled_arrival > scheduled_departure)<br/>
+CHECK ((actual_arrival IS NULL)  OR ((actual_departure IS NOT NULL AND actual_arrival IS NOT NULL) AND (actual_arrival > actual_departure)))<br/>
+CHECK (status IN ('On Time', 'Delayed', 'Departed','Arrived', 'Scheduled', 'Cancelled'))<br/>
+Ограничения внешнего ключа:<br/>
+FOREIGN KEY (aircraft_code) REFERENCES aircrafts(aircraft_code)<br/>
+FOREIGN KEY (arrival_airport) REFERENCES airports(airport_code)<br/>
+FOREIGN KEY (departure_airport) REFERENCES airports(airport_code)<br/>
+Ссылки извне:<br/>
+TABLE "ticket_flights" FOREIGN KEY (flight_id)<br/>
+REFERENCES flights(flight_id)<br/>
+##### Запрос SQL:
+select da.id, da.airport_code<br/>
+from bookings.dim_airports da<br/>
+where da.is_curent is true<br/>
+order by da.airport_code;<br/>
 
 
