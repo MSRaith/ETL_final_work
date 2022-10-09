@@ -92,8 +92,6 @@ TABLE fact_flights" FOREIGN KEY (passenger_key) REFERENCES dim_passengers(id)<br
 #### Проверка качества данных:
 1.	 Номер телефона начинается с '+'
 
----
-
 ### 2. dwh_fw_aircrafts.ktr
 Процесс извлечения данных о самолетах из таблицы bookings.aircrafts, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_aircrafts.
 Состоит из 8-ми шагов, рис.dim_aircrafts.jpeg:
@@ -241,7 +239,6 @@ TABLE fact_flights" FOREIGN KEY (arrival_airports_key) REFERENCES dim_airports(i
 3.	Широта больше или равна -90
 4.	Широта меньше или равна 90
 
----
 ### 3. dwh_fw_tariff.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.taruff, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_tariff.
 Состоит из 5-и шагов, рис.dim_tariff.jpeg:
@@ -251,9 +248,7 @@ TABLE fact_flights" FOREIGN KEY (arrival_airports_key) REFERENCES dim_airports(i
 4.	Join dt, обогащение данных по пассажирам сегодняшней датой
 5.	upload dim tariff, выгрузка данных в таблицу измерений dim_tariff, имеет подключение к БД назначения 'bd_out'
 
-
 #### Входные данные:
-
 ##### Таблица bookings.ticket_flights.
 Перелет соединяет билет с рейсом и идентифицируется их номерами.
 Для каждого перелета указываются его стоимость (amount) и класс обслуживания
@@ -282,7 +277,6 @@ from bookings.ticket_flights t_f<br/>
 group by t_f.fare_conditions<br/>
 
 #### Выходные данные:
- 
 ##### Таблица bookings.dim_tariff
 Таблица измерений bookings.dim_tariff относится к медленно изменяемому измерению второго типа.
 Содержит идентификатор записи (id), ключ аэропорта (tariff_key), класс обслуживания
@@ -407,6 +401,7 @@ FOREIGN KEY (departure_airport) REFERENCES airports(airport_code)<br/>
 Ссылки извне:<br/>
 TABLE "ticket_flights" FOREIGN KEY (flight_id)<br/>
 REFERENCES flights(flight_id)<br/>
+
 ##### Запрос SQL:
 select <br/>
 	f.flight_id,<br/>
@@ -428,32 +423,42 @@ where f.status = 'Arrived' <br/>
 		else '1900/01/01 02:00:00.000'<br/>
 	end<br/>
 	from bookings.fact_flights ff);<br/>
+
 ##### Таблица bookings.ticket_flight
 Описание выше.
+
 ##### Запрос SQL:
 select * from bookings.ticket_flights tf order by tf.flight_id;
+
 ##### Таблица bookings.dim_aircrafts
 Описание выше.
+
 ##### Запрос SQL:
 select da.id, da.aircraft_code<br/>
 from bookings.dim_aircrafts da<br/>
 where da.is_curent is true<br/>
 order by da.aircraft_code;<br/>
+
 ##### Таблица bookings.dim_passengers
 Описание выше.
+
 ##### Запрос SQL:
 select dp.id, dp.passport<br/>
 from bookings.dim_passengers dp<br/>
 where dp.is_curent is true<br/>
 order by dp.passport;<br/>
+
 ##### Таблица bookings.tickets
 Описание выше.
+
 ##### Запрос SQL:
 select t.ticket_no, t.passenger_id<br/>
 from bookings.tickets t<br/>
 order by t.passenger_id;<br/>
+
 ##### Таблица bookings.dim_tariff
 Описание выше.
+
 ##### Запрос SQL:
 select dt.id, dt."name"<br/>
 from bookings.dim_tariff dt<br/>
@@ -489,9 +494,11 @@ FOREIGN KEY (departure_airports_key) REFERENCES bookings.dim_airports(id),<br/>
 FOREIGN KEY (departure_date_key) REFERENCES bookings.dim_date(id),<br/>
 FOREIGN KEY (passengers_key) REFERENCES bookings.dim_passengers(id),<br/>
 FOREIGN KEY (tariff_key) REFERENCES bookings.dim_tariff(id)<br/>
+
 ##### Таблица bookings.fact_flights
 Описание: Таблица фактов bookings.rejected_fact_flights содержит данные, не прошедших проверку качества, о совершенных перелетах и является транзакционой. 
 Если в рамках билета был сложный маршрут с пересадками - каждый сегмент учитываем независимо. И имеет идентичную структуру, с bookings.fact_flights.<br/>
+
 #### Проверка качества данных:
 1.	Задержка вылета больше или равна 0 секунд.
 2.	Дата и время фактического вылета меньше даты и время сейчас
