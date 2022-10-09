@@ -162,7 +162,7 @@ TABLE fact_flights" FOREIGN KEY (aircraft_key) REFERENCES dim_aircrafts(id)
 
 #### Проверка качества данных:
 1.	 Дальность полета больше '0' км
----
+
 ### 3. dwh_fw_airports.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.airports, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_airports.
 Состоит из 8-ми шагов, рис.dim_airports.jpeg:
