@@ -13,7 +13,7 @@
 ## Описание трансформаций:
 
 ### 1. dwh_fw_passengers.ktr
-Процесс извлечения данных о пасажирах из таблицы bookings.tickets, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_passengers.
+Процесс извлечения данных о пассажирах из таблицы bookings.tickets, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_passengers.
 Состоит из 8-ми шагов, рис.dim_passengers.jpeg:
 1.	input passenger, извлекает необходимые данные, имеет подключение к БД источнику 'bd_in'.
 2.	select row, выбирает необходимые данные.
@@ -58,8 +58,8 @@ group by t2.passenger_name, t2.passenger_id, t2.contact_data;
 #### Выходные данные:
  
 ##### Таблица bookings.dim_passengers
-Таблица измерений bookings.dim_passengers относится к медлено изменяемому измерению второго типа.
-Содержит идентификатор записи (id), ключ пассажира (passenger_key), индификатор пассажира (passport) — номер документа,
+Таблица измерений bookings.dim_passengers относится к медленно изменяемому измерению второго типа.
+Содержит идентификатор записи (id), ключ пассажира (passenger_key), идентификатор пассажира (passport) — номер документа,
 удостоверяющего личность, его фамилию и имя (passenger_name) и контактную
 информацию (phone, email), начало и конец версии записи (start_ts, end_ts), статус записи (is_current),
 дата создания записи (create_ts), дата обновления записи (update_ts)<br/>
@@ -67,7 +67,7 @@ group by t2.passenger_name, t2.passenger_id, t2.contact_data;
 id, serial, NOT NULL, Технический ключ<br/>
 passenger_key, int, NULL, Суррогатный ключ<br/>
 passenger_name, varchar(100), NULL, Фамилия и имя пассажира<br/>
-passport, varchar(20), NULL, Индификационный номер пассажира<br/>
+passport, varchar(20), NULL, Идентификационный номер пассажира<br/>
 email, varchar(100), NULL, Почта пассажира<br/>
 phone, varchar(100), NULL, Телефон пассажира<br/>
 start_ts, date, NULL, Начало версии записи<br/>
@@ -160,9 +160,9 @@ TABLE fact_flights" FOREIGN KEY (aircraft_key) REFERENCES dim_aircrafts(id)
 
 ##### Таблица bookings.dim_rejected_aircrafts
 Таблица отклоненных измерений bookings.dim_rejected_aircrafts относится к медленно изменяемому измерению второго типа.
-И имеет идентичную структуру, с bookings.dim_dim_aircrafts.
+И имеет идентичную структуру, с bookings.dim_aircrafts.
 
-#### Проверка качества даных:
+#### Проверка качества данных:
 1.	 Дальность полета больше '0' км
 ---
 ### 3. dwh_fw_airports.ktr
@@ -313,11 +313,11 @@ TABLE fact_flights" FOREIGN KEY (tariff_key) REFERENCES dim_tariff(id)
 проверка качества и загрузка в таблицу фактов bookings.dim_fact_flight.
 Состоит из 42-х шагов, рис.dim_fact_flight.jpeg:
 1.	input dep_airports_key, получение данных из таблицы измерений bookings.dim_airports
-2.	input flights arrived, получение данныех из таблицы bookings.flights, имеет подключение к БД источнику 'bd_in'.
+2.	input flights arrived, получение данных из таблицы bookings.flights, имеет подключение к БД источнику 'bd_in'.
 3.	Get now, получения данных сегодняшней даты
 4.	input ticket_flights, получение  данных из таблицы bookings.ticket_flight, имеет подключение к БД источнику 'bd_in'
 5.	input aircraft_key, получение данных из таблицы bookings.dim_aircrafts, имеет подключение к БД назначения 'bd_out'
-6.	delay arrival and departure, вычисление задержки вылета и прибытия самалета 
+6.	delay arrival and departure, вычисление задержки вылета и прибытия самолёта 
 7.	Select flight_id выбирает из потока стобец flight_id
 8.	Sort rows by flight 2, сортирует поток данных по flight_id
 9.	input passenger_key, получение данных из таблицы bookings.dim_passengers, имеет подключение к БД назначения 'bd_out'
@@ -326,27 +326,27 @@ TABLE fact_flights" FOREIGN KEY (tariff_key) REFERENCES dim_tariff(id)
 12.	Arrival flights join, добавляет к потоку данные о билетах, из таблицы  bookings.tickets_flight
 13.	Remove flight_id_1, удаляет из потока столбец flight_id_1
 14.	input arr_airports_key, получение данных о аэропортах из таблицы dim_airports, имеет подключение к БД назначения 'bd_out'
-15.	dep_airport_key_join, добовляет к потоку данные о аэропортах прибытия.
-16.	Remove and rename row, удаление из потока вспогательных данных о аэропортах и времени вылета и прибытия рейса, переименование столбца id аэропорта в ключ 
-17.	passenger_key_join, добовляет к потоку данные о пассажирах из таблицы bookings.dim_passengers
+15.	dep_airport_key_join, добавляет к потоку данные о аэропортах прибытия.
+16.	Remove and rename row, удаление из потока вспомогательных данных о аэропортах и времени вылета и прибытия рейса, переименование столбца id аэропорта в ключ 
+17.	passenger_key_join, добавляет к потоку данные о пассажирах из таблицы bookings.dim_passengers
 18.	Sort row ticket, сортирует поток данных по ticket_no
 19.	input tariff_key, получение данных из таблицы bookings.dim_tariff, имеет подключение к БД назначения 'bd_out'
 20.	Remove row id, удаляет вспомогательный столбец id
 21.	Sort row ticket 2, сортирует поток данных по ticket_no
-22.	Ticket join, добовляет к потоку данные о билетах.
-23.	Remove ticket row and rename id, удаление вспомогательных данных о билетах, и переменование стобца id пассажира в ключ
+22.	Ticket join, добавляет к потоку данные о билетах.
+23.	Remove ticket row and rename id, удаление вспомогательных данных о билетах, и переименование столбца id пассажира в ключ
 24.	Sort rows tariff, сортирует поток данных по fare_conditions
-25.	Tariff join, добовляет к потоку данные о тарифах.
+25.	Tariff join, добавляет к потоку данные о тарифах.
 26.	Sort rows arr_airport, сортирует поток данных по arrival_airport
-27.	arr_airport_key_join, добовляет к потоку, данные о аэропортах
-28.	Remove and rename  arr_airports, удаление из потока вспогательных данных о аэропортах, переименование столбца id аэропорта в ключ
+27.	arr_airport_key_join, добавляет к потоку, данные о аэропортах
+28.	Remove and rename  arr_airports, удаление из потока вспомогательных данных о аэропортах, переименование столбца id аэропорта в ключ
 29.	Sort rows aircraft, сортирует поток данных по aircraft_code
-30.	aircraft_key_join, добаляет к потоку данные о самалетах
-31.	Remove  aircrafts, удаляет вспомогательные данные о самалетах
+30.	aircraft_key_join, добавляет к потоку данные о самолётах
+31.	Remove  aircrafts, удаляет вспомогательные данные о самолётах
 32.	Remove tariff row rename id, удаляет вспомогательные данные о тарифах, переименование столбца id тарифа в ключ,
 33.	Sort rows by flight 3, сортирует поток данных по flight_id
 34.	Sort rows by flight, сортирует поток данных по flight_id
-35.	Flights join, соеденяет потоки по соотношению flight_id
+35.	Flights join, соединяет потоки по соотношению flight_id
 36.	Remove flight_id, удаляет вспомогательные данные
 37.	Join dt, добавляет к потоку дату
 38.	Filter rows, проверка качества данных 
@@ -463,6 +463,40 @@ order by dt."name";<br/>
 #### Выходные данные:
 
 ##### Таблица bookings.fact_flights
-Описание:
-
-
+Описание: Таблица фактов bookings.fact_flights содержит данные, прошедших проверку качества, о совершенных перелетах и является транзакционой. 
+Если в рамках билета был сложный маршрут с пересадками - каждый сегмент учитываем независимо.<br/>
+Столбец, Тип, Модификаторы, Описание<br/>
+id, serial4, NOT NULL, PRIMARY KEY уникальный идентификатор перелета<br/>
+departure_date_key, int4, NOT NULL, ключ даты вылета рейса<br/>
+arrival_date_key, int4, NOT NULL, ключ даты прибытия рейса<br/>
+passengers_key, int4, NOT NULL, ключ пассажира<br/>
+actual_departure, timestamp, NOT NULL, дата и время вылета рейса<br/>
+actual_arrival, timestamp, NOT NULL, дата и время прибытия рейса<br/>
+departure_delay, int4, NOT NULL, задержка вылета в секундах<br/>
+arrival_delay, int4, NOT NULL, задержка прибытия в секундах<br/>
+aircrafts_key, int4, NOT NULL, ключ самолёта<br/>
+departure_airports_key, int4, NOT NULL, ключ аэропорта вылета<br/>
+arrival_airports_key, int4, NOT NULL, ключ аэропорта прибытия<br/>
+tariff_key, int4, NOT NULL, ключ тарифа<br/>
+price, numeric(12,2), NOT NULL, цена<br/>
+Индексы:<br/>
+PRIMARY KEY, btree (id)<br/>
+Ограничения внешнего ключа:<br/>
+FOREIGN KEY (aircrafts_key) REFERENCES bookings.dim_aircrafts(id),<br/>
+FOREIGN KEY (arrival_airports_key) REFERENCES bookings.dim_airports(id),<br/>
+FOREIGN KEY (arrival_date_key) REFERENCES bookings.dim_date(id),<br/>
+FOREIGN KEY (departure_airports_key) REFERENCES bookings.dim_airports(id),<br/>
+FOREIGN KEY (departure_date_key) REFERENCES bookings.dim_date(id),<br/>
+FOREIGN KEY (passengers_key) REFERENCES bookings.dim_passengers(id),<br/>
+FOREIGN KEY (tariff_key) REFERENCES bookings.dim_tariff(id)<br/>
+##### Таблица bookings.fact_flights
+Описание: Таблица фактов bookings.rejected_fact_flights содержит данные, не прошедших проверку качества, о совершенных перелетах и является транзакционой. 
+Если в рамках билета был сложный маршрут с пересадками - каждый сегмент учитываем независимо. И имеет идентичную структуру, с bookings.fact_flights.<br/>
+#### Проверка качества данных:
+1.	Задержка вылета больше или равна 0 секунд.
+2.	Дата и время фактического вылета меньше даты и время сейчас
+3.	Ключ самолёта не является NULL
+4.	Ключ аэропорта вылета не является NULL
+5.	Ключ аэропорта прибытия не является NULL
+6.	Ключ пассажира не является NULL
+7.	Ключ тарифа не является NULL
