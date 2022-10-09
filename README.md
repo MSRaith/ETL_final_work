@@ -239,7 +239,7 @@ TABLE fact_flights" FOREIGN KEY (arrival_airports_key) REFERENCES dim_airports(i
 3.	Широта больше или равна -90
 4.	Широта меньше или равна 90
 
-### 3. dwh_fw_tariff.ktr
+### 4. dwh_fw_tariff.ktr
 Процесс извлечения данных о аэропортах из таблицы bookings.taruff, обогащение, проверка качества и загрузка в таблицу измерений bookings.dim_tariff.
 Состоит из 5-и шагов, рис.dim_tariff.jpeg:
 1.	input tariff, извлекает необходимые данные, имеет подключение к БД источнику 'bd_in'.
